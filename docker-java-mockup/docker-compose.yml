@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  mockup-app:
+    image: java-mockup-app
+    container_name: mockup-app
+    networks:
+      - mockup-network
+    ports:
+      - "4567:4567"
+
+  mysql-db:
+    image: mysql:8.0.39
+    container_name: mysql-db
+    networks:
+      - mockup-network
+    volumes:
+      - ./mysql_db:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: sushan01
+      MYSQL_USER: mockup
+      MYSQL_PASSWORD: Mockup@123
+      MYSQL_DATABASE: mockup_db
+    ports:
+      - "3306:3306"
+
+networks:
+  mockup-network:
+    driver: bridge
