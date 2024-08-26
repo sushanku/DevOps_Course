@@ -5,6 +5,8 @@
 
 # Run the Java App Docker container
 `docker run --name mockup-app -d -p 8080:4567 java-mockup-app`
+Alternative cmd: \
+`docker run --rm --name mockup-app --network=mockup-network -d -p 4567:4567 java-mockup-app`
 
 # stop the java app container
 `docker stop mockup-app`
@@ -12,11 +14,13 @@
 # remove java app container
 `docker rm mockup-app`
 
-# 
+# to create a bridge network between mockup app and mysql db
+`docker network create -d bridge mockup-network`
 
 # database setup
 `docker run --name mysql-db -v ./mysql_db/:/docker-entrypoint-initdb.d/ -e MYSQL_ROOT_PASSWORD=sushan01 -e MYSQL_USER=mockup -e MYSQL_PASSWORD=Mockup@123 -e MYSQL_DATABASE=mockup_db -p 3306:3306  -d mysql:8.0.39`
-
+Alternative cmd: \
+`docker run --name mysql-db -v --network=mockup-network ./mysql_db/:/docker-entrypoint-initdb.d/ -e MYSQL_ROOT_PASSWORD=sushan01 -e MYSQL_USER=mockup -e MYSQL_PASSWORD=Mockup@123 -e MYSQL_DATABASE=mockup_db -p 3306:3306  -d mysql:8.0.39`
 The above command will run mysql version 8.0.39 and provides the root mysql password, mysql user db and credential and mysql DB and exposes port 3306 on localhost
 
 

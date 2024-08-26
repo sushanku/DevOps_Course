@@ -10,5 +10,6 @@ FROM openjdk:17-jdk-slim
 ARG RELEASE_VERSION=1.0
 WORKDIR /app
 COPY --from=build /app/target/*-$RELEASE_VERSION-*-dependencies.jar mockup.jar
+COPY etc ./etc
 EXPOSE 4567
 ENTRYPOINT ["java", "-jar", "mockup.jar"]
