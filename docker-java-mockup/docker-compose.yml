@@ -2,7 +2,7 @@ version: '3'
 
 services:
   mockup-app:
-    image: java-mockup-app
+    image: sushanku/java-mockup-app:latest
     container_name: mockup-app
     networks:
       - mockup-network
