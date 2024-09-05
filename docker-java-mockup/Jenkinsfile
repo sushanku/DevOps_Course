@@ -15,7 +15,7 @@ pipeline {
     stages {        
         stage('Build Docker Image') {
             steps {
-                dir(docker-java-mockup){
+                dir('docker-java-mockup'){
                     sh """
                         docker build -t ${params.DOCKER_IMAGE}:${params.DOCKER_TAG} .
                     """
@@ -26,9 +26,9 @@ pipeline {
         stage('Login to DockerHub') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: params.DOCKERHUB_CREDENTIALS, passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
+                    withCredentials([usernamePassword(credentialsId: "${env.DOCKERHUB_CREDENTIALS}", passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
                         sh """
-                            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin"
+                            echo ${DOCKERHUB_PASSWORD} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin"
                         """
                     }
                 }
