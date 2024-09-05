@@ -24,25 +24,18 @@ pipeline {
             }
         }
         
-        stage('Login to DockerHub') {
+        stage('Push Docker Image') {
             agent { label "frontend_slave" }
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: "${env.DOCKERHUB_CREDENTIALS_ID}", passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
                         sh """
                             echo ${DOCKERHUB_PASSWORD} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin
+                            docker tag ${params.DOCKER_IMAGE}:${params.DOCKER_TAG} ${params.DOCKER_IMAGE}:latest
+                            docker push ${params.DOCKER_IMAGE}:latest
                         """
                     }
                 }
-            }
-        }
-        
-        stage('Push Docker Image') {
-            steps {
-                sh """
-                    docker tag ${params.DOCKER_IMAGE}:${params.DOCKER_TAG} ${params.DOCKER_IMAGE}:latest
-                    docker push ${params.DOCKER_IMAGE}:latest
-                """
             }
         }
         
