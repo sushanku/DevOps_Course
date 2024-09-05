@@ -1,5 +1,5 @@
 pipeline {
-    agent { label "frontend_slave" }
+    agent any
     
     parameters {
         string(name: 'DOCKER_IMAGE', defaultValue: 'your-dockerhub-username/your-image-name', description: 'Docker image name (including DockerHub username)')
@@ -14,6 +14,7 @@ pipeline {
     
     stages {        
         stage('Build Docker Image') {
+            agent { label "frontend_slave" }
             steps {
                 dir('docker-java-mockup'){
                     sh """
@@ -24,6 +25,7 @@ pipeline {
         }
         
         stage('Login to DockerHub') {
+            agent { label "frontend_slave" }
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: "${env.DOCKERHUB_CREDENTIALS_ID}", passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USERNAME')]) {
@@ -45,6 +47,7 @@ pipeline {
         }
         
         stage('Deploy with Docker Compose') {
+            agent { label "deploy_server" }
             steps {
                 dir('docker-java-mockup'){
                     sh """
