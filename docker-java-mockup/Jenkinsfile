@@ -1,5 +1,5 @@
 pipeline {
-    agent "frontend_slave"
+    agent { label "frontend_slave" }
     
     parameters {
         string(name: 'DOCKER_IMAGE', defaultValue: 'your-dockerhub-username/your-image-name', description: 'Docker image name (including DockerHub username)')
