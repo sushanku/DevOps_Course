@@ -40,7 +40,7 @@ pipeline {
         }
         
         stage('Deploy with Docker Compose') {
-            agent { label "deploy_server" }
+            agent { label "mockup_server" }
             steps {
                 dir('docker-java-mockup'){
                     sh """
