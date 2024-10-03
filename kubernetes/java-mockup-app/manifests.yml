@@ -1,0 +1,148 @@
+# ConfigMap for Java Mockup App
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mockup-app-config
+data:
+  # Add your application specific configurations here
+  APP_PORT: "4567"
+  MYSQL_HOST: "mysql-svc"
+  MYSQL_PORT: "3306"
+  MYSQL_DATABASE: "mockup_db"
+---
+# Deployment for Java Mockup App
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mockup-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mockup-app
+  template:
+    metadata:
+      labels:
+        app: mockup-app
+    spec:
+      containers:
+      - name: mockup-app
+        image: sushanku/java-mockup-app:latest
+        ports:
+        - containerPort: 4567
+        envFrom:
+        - configMapRef:
+            name: mockup-app-config
+---
+# Service (LoadBalancer) for Java Mockup App
+apiVersion: v1
+kind: Service
+metadata:
+  name: mockup-app-svc
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 4567
+    targetPort: 4567
+    protocol: TCP
+  selector:
+    app: mockup-app
+---
+# ConfigMap for MySQL
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+data:
+  MYSQL_DATABASE: "mockup_db"
+---
+# Secret for MySQL (you should replace these with actual encrypted values)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+type: Opaque
+data:
+  # Note: These are base64 encoded values
+  MYSQL_ROOT_PASSWORD: c3VzaGFuMDE=        # sushan01
+  MYSQL_USER: bW9ja3Vw                     # mockup
+  MYSQL_PASSWORD: TW9ja3VwQDEyMw==         # Mockup@123
+---
+# StatefulSet for MySQL
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  serviceName: mysql-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0.39
+        ports:
+        - containerPort: 3306
+        envFrom:
+        - configMapRef:
+            name: mysql-config
+        - secretRef:
+            name: mysql-secret
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+        - name: mysql-initdb
+          mountPath: /docker-entrypoint-initdb.d
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-persistent-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+---
+# Service for MySQL
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-svc
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+    protocol: TCP
+  selector:
+    app: mysql
+---
+# PersistentVolume for MySQL init scripts
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-initdb-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: ~/kubernetes/mysql-db   # Update this path
+    type: DirectoryOrCreate
+---
+# PersistentVolumeClaim for MySQL init scripts
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-initdb-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

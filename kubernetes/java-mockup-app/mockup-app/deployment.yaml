@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mockup-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mockup-app
+  template:
+    metadata:
+      labels:
+        app: mockup-app
+    spec:
+      containers:
+      - name: mockup-app
+        image: sushanku/java-mockup-app:latest
+        ports:
+        - containerPort: 4567
+        env:
+        - name: db_URL
+          valueFrom:
+            configMapKeyRef:
+              name: mockup-app-config
+              key: DB_URL
+        - name: db_username
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_USER
+        - name: db_password
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: MYSQL_PASSWORD

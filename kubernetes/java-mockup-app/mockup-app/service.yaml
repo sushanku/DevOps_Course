@@ -1,0 +1,13 @@
+# Service (LoadBalancer) for Java Mockup App
+apiVersion: v1
+kind: Service
+metadata:
+  name: mockup-app-svc
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 4567
+    protocol: TCP
+  selector:
+    app: mockup-app

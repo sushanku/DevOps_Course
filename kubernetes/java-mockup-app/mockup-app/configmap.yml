@@ -1,0 +1,12 @@
+# ConfigMap for Java Mockup App
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mockup-app-config
+data:
+  # Add your application specific configurations here
+  APP_PORT: "4567"
+  MYSQL_HOST: "mysql-db"
+  MYSQL_PORT: "3306"
+  MYSQL_DATABASE: "mockup_db"
+  DB_URL: "jdbc:mysql://mysql-db:3306/mockup_db" 
